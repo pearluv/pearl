@@ -202,6 +202,23 @@
             text-align: left;
         }
 
+        /* 카카오톡 스포방지 스타일 */
+        .spoiler {
+            background-color: #3d3a37;
+            color: transparent;
+            border-radius: 4px;
+            padding: 2px 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            display: inline-block;
+        }
+
+        .spoiler.revealed {
+            background-color: rgba(217, 119, 36, 0.15);
+            color: var(--accent-hover);
+        }
+
         .map-btn {
             display: inline-block;
             margin-top: 10px;
@@ -325,7 +342,7 @@
     <!-- 1일차: 첫 식사 선택 룰렛 -->
     <div class="ladder-section">
         <div class="ladder-title">🍚 [첫날] 서울 도착 후 첫 식사 결정하기</div>
-        <div class="ladder-desc">돼지집 vs 백승희의들밥 중 오늘의 첫 끼를 뽑아보세요!</div>
+        <div class="ladder-desc">돼지집으로 확정된 오늘의 첫 끼! 클릭해서 확인해보세요 🙈</div>
         <button class="roulette-btn" onclick="pickFirstMeal()">안되겠으면 빠꾸없쪄~첫 식사 장소 뽑기 🎲</button>
         <div id="firstMealResult" class="result-box"></div>
     </div>
@@ -437,8 +454,8 @@
 </div>
 
 <script>
-    // 1일차 첫 식사
-    const firstMeals = ["🐖 돼지집", "🍚 백승희의들밥"];
+    // 1일차 첫 식사 (돼지집으로 단일 설정)
+    const firstMeals = ["🐖 돼지집"];
 
     // 2일차 아침 등산
     const morningHikeOptions = [
@@ -484,7 +501,7 @@
             { name: "카페타자기", cat: "카페", tip: "남산타워 뷰와 감성 글귀가 돋보이는 해방촌 카페" }
         ],
         "마포구 & 영등포구": [
-            { name: "소이연남", cat: "식당", tip: "연남동의 진한 태국식 쇠고기 쌀국수 맛집" },
+            { name: "소이연남", cat: "식당", tip: "연남동의 진한 태국식 쌀국수 맛집" },
             { name: "경의선 숲길", cat: "명소", tip: "연남동부터 아기자기한 상점들을 걸으며 즐기는 산책길" },
             { name: "선유도공원", cat: "명소", tip: "양화대교 중간의 한강 유일 생태공원 산책" },
             { name: "문래동 예술촌", cat: "명소", tip: "철공소 골목 사이 감성 카페와 맛집 탐방" }
@@ -526,27 +543,31 @@
 
     let selectedStep1 = null;
 
+    // 1일차 첫 식사 (스포방지 태그 구현)
     function pickFirstMeal() {
         const pick = firstMeals[Math.floor(Math.random() * firstMeals.length)];
         const resBox = document.getElementById('firstMealResult');
         resBox.style.display = 'block';
-        resBox.innerHTML = `🎉 추천 첫 끼 식사 장소: <strong>[${pick}]</strong>`;
+        resBox.innerHTML = `🎉 추천 첫 끼 식사 장소: <span class="spoiler" onclick="this.classList.toggle('revealed')"><strong>[${pick}]</strong></span>`;
     }
 
+    // 2일차 아침 등산 (스포방지 태그 구현)
     function pickMorningHike() {
         const pick = morningHikeOptions[Math.floor(Math.random() * morningHikeOptions.length)];
         const resBox = document.getElementById('morningHikeResult');
         resBox.style.display = 'block';
-        resBox.innerHTML = `🎉 아침 일정 결과: <br><strong>${pick}</strong>`;
+        resBox.innerHTML = `🎉 아침 일정 결과: <br><span class="spoiler" onclick="this.classList.toggle('revealed')"><strong>${pick}</strong></span>`;
     }
 
+    // 2일차 저녁 식사 (스포방지 태그 구현)
     function pickDinner() {
         const pick = dinners[Math.floor(Math.random() * dinners.length)];
         const resBox = document.getElementById('dinnerResult');
         resBox.style.display = 'block';
-        resBox.innerHTML = `🎉 저녁 식사 장소: <strong>[${pick}]</strong>`;
+        resBox.innerHTML = `🎉 저녁 식사 장소: <span class="spoiler" onclick="this.classList.toggle('revealed')"><strong>[${pick}]</strong></span>`;
     }
 
+    // 1단계 권역 선택 (스포방지 태그 구현)
     function pickRegionStep1() {
         const regions = ["서울 시내", "서울 근교"];
         selectedStep1 = regions[Math.floor(Math.random() * regions.length)];
@@ -556,7 +577,7 @@
         const hintText = document.getElementById('tourDetailHint');
 
         resBox.style.display = 'block';
-        resBox.innerHTML = `🎉 1단계 권역 선택: <strong>[${selectedStep1}]</strong>`;
+        resBox.innerHTML = `🎉 1단계 권역 선택: <span class="spoiler" onclick="this.classList.toggle('revealed')"><strong>[${selectedStep1}]</strong></span>`;
 
         if (selectedStep1 === "서울 시내") {
             seoulBtn.disabled = false;
@@ -596,7 +617,6 @@
             }
         });
 
-        // 랜덤으로 4곳 선정
         const shuffled = [...selectedList].sort(() => 0.5 - Math.random());
         const pickedPlaces = shuffled.slice(0, 4);
 
@@ -636,7 +656,6 @@
 
         html += `</div>`;
 
-        // 저녁 식사 장소 이동 꿀팁 및 동선 추가
         html += `
             <div class="route-guide-box">
                 <div class="route-title">🐟 둘째 날 저녁 식사 장소(관악구 봉천·신림) 이동 동선 꿀팁</div>
